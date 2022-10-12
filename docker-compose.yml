@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  example-app:
+    container_name: example-app
+    depends_on:
+      -   example-db
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    build:
+      context: .
+    environment:
+      DB_USERNAME: ${DB_USERNAME:?dbUserNameNorProvided}
+      DB_PASSWORD: ${DB_PASSWORD:?dbPasswordNotProvided}
+      DB_NAME: ${DB_NAME:?dbNameNotProvided}
+      DB_HOST: example-db
+      DB_PORT: 5432
+      APP_PORT: ${APP_PORT:?appPortNotProvided}
+    restart: unless-stopped
+  example-db:
+    container_name: example-db
+    image: 'postgres:13.1-alpine'
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    restart: unless-stopped
